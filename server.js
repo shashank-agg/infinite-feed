@@ -8,6 +8,7 @@ let aggregateFeed = []
 let newestFeedItem;
 const PAGE_SIZE = 10;
 const POLLING_PERIOD = 5000; // in ms
+const MONGO_URL = 'mongodb://localhost:27017';
 /*
 ###################################################
 On service bootup:
@@ -16,7 +17,7 @@ On service bootup:
 3. Start the polling for RSS feeds.
 ###################################################
 */
-mongoose.connect('mongodb://localhost:27017/rssfeedDB');
+mongoose.connect(MONGO_URL + '/rssfeedDB', {useNewUrlParser: true});
 var db = mongoose.connection;
 const rssItemSchema = new mongoose.Schema({
     title: String,
