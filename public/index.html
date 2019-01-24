@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Basic Example with JSX</title>
+  <style>
+    body {
+      text-align: center;
+      font-size: 15px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="container"></div>
+  <link rel="stylesheet" type="text/css" href="styles.css" />
+  <script src="https://unpkg.com/react@15/dist/react.min.js"></script>
+  <script src="https://unpkg.com/react-dom@15/dist/react-dom.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.min.js"></script>
+  <script type="text/babel">
+      const ExampleApplication = React.createClass({
+
+        // constructor: function(props) {
+        //   this.state = {
+        //     feed: [],
+        //     isLoading: true
+        //   }
+        // },
+
+        getInitialState: function() {
+          return {
+            feed:[],
+            isLoading: true,
+            currentPage: 0
+          }
+        },
+
+        handleScroll: function() {
+          if (window.innerHeight + document.documentElement.scrollTop + 5 > document.documentElement.offsetHeight ) {
+              this.setState({currentPage: this.state.currentPage + 1})
+              console.log("at the end");
+              this.loadFeed();
+          }
+        },
+
+        loadFeed: function() {
+          fetch("feed?page=" + this.state.currentPage)
+            .then(resp => resp.json())
+            .then(feedResp => {
+              if(feedResp.length === 0) {
+                this.setState({currentPage: this.state.currentPage - 1}); //Query for the same page next time
+                return;
+              }
+              this.setState({feed: this.state.feed.concat(feedResp)})
+            })
+        },
+
+        componentWillMount: function() {
+          this.loadFeed(this.state.currentPage);
+          window.addEventListener('scroll', this.handleScroll);
+        },
+
+        render: function() {
+          return (
+            <div className="container">
+              <div className="row">
+                  <div>Title</div>
+                  <div>Description</div>
+                  <div>Publish date</div>
+              </div>
+              {
+                this.state.feed.map((item) => {
+                  console.log(item);
+                  
+                  return (
+                      <div className="row">
+                          <div><a href={item.link} target="_blank">{item.title}</a></div>
+                          <div>{item.description}</div>
+                          <div>{item.pubDate}</div>
+                      </div>
+                  );
+              })
+            }
+            <div>
+                
+            </div>
+          </div>
+          )
+        }
+      });
+
+      // const start = new Date().getTime();
+
+      // setInterval(function() {
+        ReactDOM.render(
+          <ExampleApplication />,
+          document.getElementById('container')
+        );
+      // }, 50);
+    </script>
+
+</body>
+
+</html>
